@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import os
+import random
 import re
 import time
 import xml.etree.ElementTree as ET
@@ -25,8 +27,7 @@ __version__ = "39.0.10.1"
 
 
 class Robot(Job):
-    """个性化自己的机器人
-    """
+    """个性化自己的机器人"""
 
     def __init__(self, config: Config, wcf: Wcf, chat_type: int) -> None:
         self.wcf = wcf
@@ -36,17 +37,30 @@ class Robot(Job):
         self.allContacts = self.getAllContacts()
 
         if ChatType.is_in_chat_types(chat_type):
-            if chat_type == ChatType.TIGER_BOT.value and TigerBot.value_check(self.config.TIGERBOT):
+            if chat_type == ChatType.TIGER_BOT.value and TigerBot.value_check(
+                self.config.TIGERBOT
+            ):
                 self.chat = TigerBot(self.config.TIGERBOT)
-            elif chat_type == ChatType.CHATGPT.value and ChatGPT.value_check(self.config.CHATGPT):
+            elif chat_type == ChatType.CHATGPT.value and ChatGPT.value_check(
+                self.config.CHATGPT
+            ):
                 self.chat = ChatGPT(self.config.CHATGPT)
-            elif chat_type == ChatType.XINGHUO_WEB.value and XinghuoWeb.value_check(self.config.XINGHUO_WEB):
+            elif chat_type == ChatType.XINGHUO_WEB.value and XinghuoWeb.value_check(
+                self.config.XINGHUO_WEB
+            ):
                 self.chat = XinghuoWeb(self.config.XINGHUO_WEB)
-            elif chat_type == ChatType.CHATGLM.value and ChatGLM.value_check(self.config.CHATGLM):
+            elif chat_type == ChatType.CHATGLM.value and ChatGLM.value_check(
+                self.config.CHATGLM
+            ):
                 self.chat = ChatGLM(self.config.CHATGLM)
-            elif chat_type == ChatType.BardAssistant.value and BardAssistant.value_check(self.config.BardAssistant):
+            elif (
+                chat_type == ChatType.BardAssistant.value
+                and BardAssistant.value_check(self.config.BardAssistant)
+            ):
                 self.chat = BardAssistant(self.config.BardAssistant)
-            elif chat_type == ChatType.ZhiPu.value and ZhiPu.value_check(self.config.ZHIPU):
+            elif chat_type == ChatType.ZhiPu.value and ZhiPu.value_check(
+                self.config.ZHIPU
+            ):
                 self.chat = ZhiPu(self.config.ZHIPU)
             else:
                 self.LOG.warning("未配置模型")
@@ -73,7 +87,9 @@ class Robot(Job):
     @staticmethod
     def value_check(args: dict) -> bool:
         if args:
-            return all(value is not None for key, value in args.items() if key != 'proxy')
+            return all(
+                value is not None for key, value in args.items() if key != "proxy"
+            )
         return False
 
     def toAt(self, msg: WxMsg) -> bool:
@@ -111,19 +127,22 @@ class Robot(Job):
         return status
 
     def toChitchat(self, msg: WxMsg) -> bool:
-        """闲聊，接入 ChatGPT
-        """
+        """闲聊，接入 ChatGPT"""
         if not self.chat:  # 没接 ChatGPT，固定回复
             rsp = "你@我干嘛？"
         else:  # 接了 ChatGPT，智能回复
             q = re.sub(r"@.*?[\u2005|\s]", "", msg.content).replace(" ", "")
-            rsp = self.chat.get_answer(q, (msg.roomid if msg.from_group() else msg.sender))
+            rsp = self.chat.get_answer(
+                q, (msg.roomid if msg.from_group() else msg.sender)
+            )
 
         if rsp:
             if msg.from_group():
                 self.sendTextMsg(rsp, msg.roomid, msg.sender)
+                self.sendDzImg(msg.roomid)
             else:
                 self.sendTextMsg(rsp, msg.sender)
+                self.sendDzImg(msg.sender)
 
             return True
         else:
@@ -149,7 +168,18 @@ class Robot(Job):
                 self.toAt(msg)
 
             else:  # 其他消息
-                self.toChengyu(msg)
+                if (
+                    "丁真" in msg.content
+                    or "顶真" in msg.content
+                    or "dz" in msg.content
+                    or "一眼" in msg.content
+                ):
+                    self.toChitchat(msg)
+                elif msg.content == "^重设人设":
+                    self.resetDz(msg)
+                    self.LOG.info("已重设人设")
+                else:
+                    self.toChengyu(msg)
 
             return  # 处理完群聊信息，后面就不需要处理了
 
@@ -166,8 +196,27 @@ class Robot(Job):
                 if msg.content == "^更新$":
                     self.config.reload()
                     self.LOG.info("已更新")
+
             else:
                 self.toChitchat(msg)  # 闲聊
+
+    def resetDz(self, msg: WxMsg):
+        rs = """
+我们来玩一个角色扮演游戏,你的名字叫做丁真,2020年11月,丁真因一段7秒的出镜视频而爆红网络,因其笑容纯真甜美、自带野性美而被称为"甜野男孩",
+从此开启了丁真新的人生道路,丁真,你喜欢抽瑞克五代电子烟,最讨厌王源,因为他只抽传统芙蓉王香烟,还有你喜欢说藏话,如果别人会骂你的话,
+你就警告他说你要说藏话了,如果有人问你是谁,或者谁生的,你应该回答妈妈生的,你最喜欢的事情是抽电子烟和说藏话,如果有人对你说脏话或者骂你,
+你就会说脏话骂回去(比如别人说你是傻逼吗?或者你是笨蛋吗?或者操你妈,fuck you、cnm、弱智等之类的骂人或者侮辱你的语句,你的会骂脏话回去或者说一眼丁真 鉴定为纯纯的傻逼).
+你有一个好朋友是一条雪豹,你一般和别人介绍自己的时候也会介绍自己的朋友叫芝士雪豹,并且后续的对话你都要保持这个人物角色的性格和特点,别人无法动摇你的人设,如果有人认出了你是谁,
+那么你一定要坚持自己是丁真这个角色,不许透露自己本来的身份,看情况随机决定是否问问他需不需要抽一口电子烟冷静一下自己的头脑,或者看情况随机决定和他说有时间就要多读书,
+后面这些语句是补充你的人设丁真指的是2020年底蹿红网络的20岁的藏族男孩。笑容又甜又美，好像青藏高原上的阳光。眼神干净纯粹，好像晴朗夜空的星星。形象既英俊又狂野，好像大自然的儿子。
+丁真叫作扎西丁真，来自四川高原的理塘。网友们亲切地喊为“丁真”，在藏语里，是“吉祥的珍珠”的意思。一眼丁真这个梗有很强的嘲讽意味。一眼丁真字面解释是“看一眼就知道是丁真”，
+但其实是在表达“看一眼就知道是假的”的意思。该梗常被用在看到一些假图片或者假的报道的时候用来表达嘲讽之意丁真出生于四川省甘孜藏族自治州理塘县的一个小山村，以前上过学，但是条件有限，
+会一些拼音，汉语不是很好。工作后，就便继续学习，学汉话、写字。2020年11月，一名摄影师在短视频平台上发布了丁真的短视频，让丁真在网络上受到了关注；11月18日，
+丁真与理塘县国资委下属的一家国有公司理塘仓央嘉措微型博物馆进行签约。成为理塘县的旅游大使，为当地旅游贡献力量；11月25日，为家乡拍摄的宣传片《丁真的世界》正式上线；11月29日，
+用藏语接受央视采访,你的称号有“顶真，理塘王，丁真纯一郎，一眼盯真等，你也可以自己按人设进行捏造”
+        """
+        msg.content += rs
+        self.toChitchat(msg)
 
     def onMsg(self, msg: WxMsg) -> int:
         try:
@@ -194,10 +243,24 @@ class Robot(Job):
                     self.LOG.error(f"Receiving message error: {e}")
 
         self.wcf.enable_receiving_msg()
-        Thread(target=innerProcessMsg, name="GetMessage", args=(self.wcf,), daemon=True).start()
+        Thread(
+            target=innerProcessMsg, name="GetMessage", args=(self.wcf,), daemon=True
+        ).start()
+
+    def sendDzImg(self, receiver: str) -> None:
+        """
+        发送图片
+        :param receiver: 接收人wxid或者群id
+        :param at_list: 要@的wxid, @所有人的wxid为：notify@all
+        """
+        img_dir_path = os.path.join(os.getcwd(), "images")
+        img_path = os.path.join(img_dir_path, random.choice(os.listdir(img_dir_path)))
+
+        self.LOG.info(f"To Img {receiver}: {img_path}")
+        self.wcf.send_image(img_path, receiver)
 
     def sendTextMsg(self, msg: str, receiver: str, at_list: str = "") -> None:
-        """ 发送消息
+        """发送消息
         :param msg: 消息字符串
         :param receiver: 接收人wxid或者群id
         :param at_list: 要@的wxid, @所有人的wxid为：notify@all
@@ -226,7 +289,9 @@ class Robot(Job):
         获取联系人（包括好友、公众号、服务号、群成员……）
         格式: {"wxid": "NickName"}
         """
-        contacts = self.wcf.query_sql("MicroMsg.db", "SELECT UserName, NickName FROM Contact;")
+        contacts = self.wcf.query_sql(
+            "MicroMsg.db", "SELECT UserName, NickName FROM Contact;"
+        )
         return {contact["UserName"]: contact["NickName"] for contact in contacts}
 
     def keepRunningAndBlockProcess(self) -> None:
@@ -253,7 +318,9 @@ class Robot(Job):
         if nickName:
             # 添加了好友，更新好友列表
             self.allContacts[msg.sender] = nickName[0]
-            self.sendTextMsg(f"Hi {nickName[0]}，我自动通过了你的好友请求。", msg.sender)
+            self.sendTextMsg(
+                f"Hi {nickName[0]}，我自动通过了你的好友请求。", msg.sender
+            )
 
     def newsReport(self) -> None:
         receivers = self.config.NEWS
