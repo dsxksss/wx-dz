@@ -67,12 +67,12 @@ def main(chat_type: int):
 
     # # 每天 18:30 发送新闻
     # robot.onEveryTime("18:42", robot.newsReport)
+    # # 每天 16:30 提醒发日报周报月报
+    # robot.onEveryTime("14:21", ReportReminder.remind, robot=robot)
 
     robot.onEveryTime("08:00", APEX_report, robot=robot)
     robot.onEveryTime("18:00", APEX_report, robot=robot)
 
-    # 每天 16:30 提醒发日报周报月报
-    robot.onEveryTime("14:21", ReportReminder.remind, robot=robot)
 
     # 让机器人一直跑
     robot.keepRunningAndBlockProcess()
