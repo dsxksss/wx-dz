@@ -11,17 +11,32 @@ from robot import Robot, __version__
 from wcferry import Wcf
 
 
-def weather_report(robot: Robot) -> None:
+# def weather_report(robot: Robot) -> None:
+#     """模拟发送天气预报"""
+
+#     # 获取接收人
+#     receivers = ["24309710403@chatroom"]
+
+#     # 获取天气，需要自己实现，可以参考 https://gitee.com/lch0821/WeatherScrapy 获取天气。
+#     report = "这就是获取到的天气情况了"
+
+#     for r in receivers:
+#         robot.sendTextMsg(report, r, "wxid_d2v9quh2emsu22")
+#         # robot.sendTextMsg(report, r, "notify@all")   # 发送消息并@所有人
+
+
+def APEX_report(robot: Robot) -> None:
     """模拟发送天气预报"""
 
     # 获取接收人
     receivers = ["24309710403@chatroom"]
 
-    # 获取天气，需要自己实现，可以参考 https://gitee.com/lch0821/WeatherScrapy 获取天气。
-    report = "这就是获取到的天气情况了"
-
     for r in receivers:
-        robot.sendTextMsg(report, r)
+        robot.sendTextMsg(
+            "今天打不打? 我最喜欢玩APEX了一天不玩就会死掉 [快哭了][可怜]",
+            r,
+            "wxid_d2v9quh2emsu22",
+        )
         # robot.sendTextMsg(report, r, "notify@all")   # 发送消息并@所有人
 
 
@@ -47,8 +62,14 @@ def main(chat_type: int):
     # 接收消息
     # robot.enableRecvMsg()     # 可能会丢消息？
     robot.enableReceivingMsg()  # 加队列
-    
-    robot.newsReport()
+
+    # robot.newsReport()
+
+    # # 每天 18:30 发送新闻
+    # robot.onEveryTime("18:42", robot.newsReport)
+
+    robot.onEveryTime("08:00", APEX_report, robot=robot)
+    robot.onEveryTime("18:00", APEX_report, robot=robot)
 
     # 每天 16:30 提醒发日报周报月报
     robot.onEveryTime("14:21", ReportReminder.remind, robot=robot)

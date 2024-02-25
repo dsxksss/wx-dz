@@ -174,7 +174,7 @@ class Robot(Job):
                     or "dz" in msg.content
                     or "一眼" in msg.content
                 ):
-                    self.toChitchat(msg)
+                    self.sendDzImg(msg.roomid)
                 elif msg.content == "^重设人设":
                     self.resetDz(msg)
                     self.LOG.info("已重设人设")
