@@ -25,15 +25,23 @@ from wcferry import Wcf
 #         # robot.sendTextMsg(report, r, "notify@all")   # 发送消息并@所有人
 
 
-def APEX_report(robot: Robot) -> None:
-    """模拟发送天气预报"""
-
+def Game_remind(robot: Robot) -> None:
     # 获取接收人
     receivers = ["24309710403@chatroom"]
 
     for r in receivers:
         robot.sendTextMsg(
-            "今天打不打? 我最喜欢玩APEX了一天不玩就会死掉 [快哭了][可怜]",
+            "今天打不打? 我最喜欢玩游戏了,一天不玩就会死掉 [快哭了][可怜]",
+            r,
+            "wxid_d2v9quh2emsu22",
+        )
+        robot.sendTextMsg(
+            "今天打不打? 我最喜欢玩游戏了,一天不玩就会死掉 [快哭了][可怜]",
+            r,
+            "wxid_d2v9quh2emsu22",
+        )
+        robot.sendTextMsg(
+            "今天打不打? 我最喜欢玩游戏了,一天不玩就会死掉 [快哭了][可怜]",
             r,
             "wxid_d2v9quh2emsu22",
         )
@@ -69,9 +77,9 @@ def main(chat_type: int):
     # robot.onEveryTime("18:42", robot.newsReport)
     # # 每天 16:30 提醒发日报周报月报
     # robot.onEveryTime("14:21", ReportReminder.remind, robot=robot)
-
-    robot.onEveryTime("08:00", APEX_report, robot=robot)
-    robot.onEveryTime("18:00", APEX_report, robot=robot)
+    robot.onEveryTime("08:30", Game_remind, robot=robot)
+    robot.onEveryTime("12:30", Game_remind, robot=robot)
+    robot.onEveryTime("18:00", Game_remind, robot=robot)
 
 
     # 让机器人一直跑
