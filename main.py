@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import random
 import signal
 from argparse import ArgumentParser
 
@@ -29,22 +30,27 @@ def Game_remind(robot: Robot) -> None:
     # 获取接收人
     receivers = ["24309710403@chatroom"]
 
+    texts = [
+        "今天打不打? 我最喜欢玩游戏了,一天不玩就会死掉 [快哭了][可怜]",
+        "今天要一起打游戏吗？我超级喜欢游戏，不玩一天就感觉要死掉了 [快哭了][可怜]",
+        "想一起玩游戏吗？我对游戏情有独钟，一天不玩就觉得无法生存 [快哭了][可怜]",
+        "今天打游戏怎么样？我是游戏狂热爱好者，不玩就感觉要崩溃 [快哭了][可怜]",
+        "今天要不要一起打游戏？我对游戏着迷，不玩就感觉生无可恋 [快哭了][可怜]",
+        "想和我一起玩游戏吗？我是游戏控，不玩就觉得世界失色 [快哭了][可怜]",
+        "今天一起打游戏吗？我是游戏迷，不玩就觉得生命失去了意义 [快哭了][可怜]",
+        "想和我一起游戏吗？我对游戏痴迷，不玩就觉得人生无趣 [快哭了][可怜]",
+        "今天要不要一起打游戏？我是游戏爱好者，不玩就感觉自己要完蛋了 [快哭了][可怜]",
+        "想和我一起打游戏吗？我对游戏着迷，不玩就感觉生不如死 [快哭了][可怜]",
+        "今天要一起玩游戏吗？我是游戏狂热粉，不玩就觉得人生失色 [快哭了][可怜]",
+    ]
+
     for r in receivers:
-        robot.sendTextMsg(
-            "今天打不打? 我最喜欢玩游戏了,一天不玩就会死掉 [快哭了][可怜]",
-            r,
-            "wxid_d2v9quh2emsu22",
-        )
-        robot.sendTextMsg(
-            "今天打不打? 我最喜欢玩游戏了,一天不玩就会死掉 [快哭了][可怜]",
-            r,
-            "wxid_d2v9quh2emsu22",
-        )
-        robot.sendTextMsg(
-            "今天打不打? 我最喜欢玩游戏了,一天不玩就会死掉 [快哭了][可怜]",
-            r,
-            "wxid_d2v9quh2emsu22",
-        )
+        for _ in range(3):
+            robot.sendTextMsg(
+                random.choice(texts),
+                r,
+                "wxid_d2v9quh2emsu22",
+            )
         # robot.sendTextMsg(report, r, "notify@all")   # 发送消息并@所有人
 
 
@@ -80,7 +86,6 @@ def main(chat_type: int):
     robot.onEveryTime("08:30", Game_remind, robot=robot)
     robot.onEveryTime("12:30", Game_remind, robot=robot)
     robot.onEveryTime("18:00", Game_remind, robot=robot)
-
 
     # 让机器人一直跑
     robot.keepRunningAndBlockProcess()

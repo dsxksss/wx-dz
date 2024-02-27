@@ -168,13 +168,21 @@ class Robot(Job):
                 self.toAt(msg)
 
             else:  # 其他消息
+
                 if (
                     "丁真" in msg.content
                     or "顶真" in msg.content
                     or "dz" in msg.content
                     or "一眼" in msg.content
                 ):
-                    self.sendDzImg(msg.roomid)
+                    if "笑" in msg.content:
+                        self.sendDzImg(msg.roomid, tag="笑")
+                    elif "骂" in msg.content:
+                        self.sendDzImg(msg.roomid, tag="骂")
+                    elif "哭" in msg.content:
+                        self.sendDzImg(msg.roomid, tag="哭")
+                    else:
+                        self.sendDzImg(msg.roomid)
                 elif msg.content == "^重设人设":
                     self.resetDz(msg)
                     self.LOG.info("已重设人设")
@@ -248,14 +256,26 @@ class Robot(Job):
             target=innerProcessMsg, name="GetMessage", args=(self.wcf,), daemon=True
         ).start()
 
-    def sendDzImg(self, receiver: str) -> None:
+    def sendDzImg(self, receiver: str, tag="") -> None:
         """
         发送图片
         :param receiver: 接收人wxid或者群id
         :param at_list: 要@的wxid, @所有人的wxid为：notify@all
         """
         img_dir_path = os.path.join(os.getcwd(), "images")
-        img_path = os.path.join(img_dir_path, random.choice(os.listdir(img_dir_path)))
+
+        if tag == "笑":
+            img_path = os.path.join(img_dir_path, "笑1.jpg")
+        elif tag == "骂":
+            img_path = os.path.join(
+                img_dir_path, random.choice(["骂1.jpeg", "骂2.jpg"])
+            )
+        elif tag == "哭":
+            img_path = os.path.join(img_dir_path, "哭.jpg")
+        else:
+            img_path = os.path.join(
+                img_dir_path, random.choice(os.listdir(img_dir_path))
+            )
 
         self.LOG.info(f"To Img {receiver}: {img_path}")
         self.wcf.send_image(img_path, receiver)
