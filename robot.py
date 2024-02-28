@@ -173,7 +173,9 @@ class Robot(Job):
                     "丁真" in msg.content
                     or "顶真" in msg.content
                     or "dz" in msg.content
-                    or "一眼" in msg.content
+                    or "珍珠" in msg.content
+                    or "小马" in msg.content
+                    or "雪豹" in msg.content
                 ):
                     if "笑" in msg.content:
                         self.sendDzImg(msg.roomid, tag="笑")
