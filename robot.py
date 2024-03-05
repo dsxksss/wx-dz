@@ -301,7 +301,7 @@ class Robot(Job):
                         province = forecast.get("province")
                         report_time = forecast.get("reporttime")
                         message = f"嘿嘿嘿, 小马丁正来啦!\n"
-                        message = f"{province} - {city} 的天气信息：\n"
+                        message += f"{province} - {city} 的天气信息：\n"
                         message += f"数据发布时间：{report_time}\n"
 
                         casts = forecast.get("casts", [])
