@@ -190,6 +190,7 @@ class Robot(Job):
                         self.sendDzImg(msg.roomid, tag="哭")
                     elif "天气" in msg.content:
                         self.weather_report(msg.content, [msg.roomid])
+                        self.sendDzImg(msg.roomid, tag="笑")
                     else:
                         self.sendDzImg(msg.roomid)
                 elif msg.content == "^重设人设":
@@ -299,6 +300,7 @@ class Robot(Job):
                         city = forecast.get("city")
                         province = forecast.get("province")
                         report_time = forecast.get("reporttime")
+                        message = f"嘿嘿嘿, 小马丁正来啦!\n"
                         message = f"{province} - {city} 的天气信息：\n"
                         message += f"数据发布时间：{report_time}\n"
 
@@ -324,7 +326,7 @@ class Robot(Job):
                                 message += f"白天风向：{day_wind}\n"
                                 message += f"夜晚风向：{night_wind}\n"
                                 message += f"白天风力：{day_power}\n"
-                                message += f"夜晚风力：{night_power}"
+                                message += f"夜晚风力：{night_power}\n"
 
                         for receiver in receivers:
                             self.sendTextMsg(message, receiver)
