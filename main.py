@@ -25,6 +25,9 @@ from wcferry import Wcf
 #         robot.sendTextMsg(report, r, "wxid_d2v9quh2emsu22")
 #         # robot.sendTextMsg(report, r, "notify@all")   # 发送消息并@所有人
 
+qmh = "wxid_d2v9quh2emsu22"
+cxf = "wxid_krjnrubsezs412"
+
 
 def signin_remind(robot: Robot) -> None:
     for _ in range(3):
@@ -53,11 +56,20 @@ def game_remind(robot: Robot) -> None:
     ]
 
     for r in receivers:
+        # qmh
         for _ in range(3):
             robot.sendTextMsg(
                 random.choice(texts),
                 r,
-                "wxid_d2v9quh2emsu22",
+                qmh,
+            )
+
+        # cxf
+        for _ in range(3):
+            robot.sendTextMsg(
+                random.choice(texts),
+                r,
+                cxf,
             )
         # robot.sendTextMsg(report, r, "notify@all")   # 发送消息并@所有人
 
