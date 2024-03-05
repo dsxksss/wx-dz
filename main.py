@@ -35,15 +35,12 @@ def signin_remind(robot: Robot, is_up: bool) -> None:
     down = "下班打卡喔! 下班打卡喔! 下班打卡喔! 别忘记打卡喔箱底们呐!!! [呲牙][强] [呲牙][强] [呲牙][强]"
 
     for _ in range(3):
-        robot.sendTextMsg(
-            up if is_up else down,
-            "24309710403@chatroom",
-        )
+        robot.sendTextMsg(up if is_up else down, "24309710403@chatroom", "notify@all")
 
 
 def game_remind(robot: Robot) -> None:
     # 获取接收人
-    receivers = ["24309710403@chatroom"]
+    receiver = "24309710403@chatroom"
 
     texts = [
         "今天打不打? 我最喜欢玩游戏了,一天不玩就会死掉 [快哭了][可怜]",
@@ -59,21 +56,13 @@ def game_remind(robot: Robot) -> None:
         "今天要一起玩游戏吗？我是游戏狂热粉，不玩就觉得人生失色 [快哭了][可怜]",
     ]
 
-    for r in receivers:
-        # qmh
-        robot.sendTextMsg(
-            random.choice(texts),
-            r,
-            qmh,
-        )
+    # qmh
+    robot.sendTextMsg(random.choice(texts), receiver, qmh)
 
-        # cxf
-        robot.sendTextMsg(
-            random.choice(texts),
-            r,
-            cxf,
-        )
-        # robot.sendTextMsg(report, r, "notify@all")   # 发送消息并@所有人
+    # cxf
+    robot.sendTextMsg(random.choice(texts), receiver, cxf)
+
+    # robot.sendTextMsg(report, r, "notify@all")   # 发送消息并@所有人
 
 
 def main(chat_type: int):
