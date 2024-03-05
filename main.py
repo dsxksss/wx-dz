@@ -26,13 +26,17 @@ from wcferry import Wcf
 #         # robot.sendTextMsg(report, r, "notify@all")   # 发送消息并@所有人
 
 qmh = "wxid_d2v9quh2emsu22"
-cxf = "wxid_krjnrubsezs412"
+zxk = "wxid_krjnrubsezs412"
+cxf = "wxid_af2xqrab4s6z22"
 
 
-def signin_remind(robot: Robot) -> None:
+def signin_remind(robot: Robot, is_up: bool) -> None:
+    up = "打卡喔! 打卡喔! 打卡喔! 别忘记打卡喔箱底们呐 [快哭了][凋谢] [快哭了][凋谢] [快哭了][凋谢]"
+    down = "下班打卡喔! 下班打卡喔! 下班打卡喔! 别忘记打卡喔箱底们呐 [呲牙][强] [呲牙][强] [呲牙][强]"
+
     for _ in range(3):
         robot.sendTextMsg(
-            "打卡喔! 打卡喔! 打卡喔! 别忘记了打卡喔箱底们呐 [快哭了][快哭了][快哭了]",
+            up if is_up else down,
             "24309710403@chatroom",
         )
 
@@ -57,20 +61,18 @@ def game_remind(robot: Robot) -> None:
 
     for r in receivers:
         # qmh
-        for _ in range(3):
-            robot.sendTextMsg(
-                random.choice(texts),
-                r,
-                qmh,
-            )
+        robot.sendTextMsg(
+            random.choice(texts),
+            r,
+            qmh,
+        )
 
         # cxf
-        for _ in range(3):
-            robot.sendTextMsg(
-                random.choice(texts),
-                r,
-                cxf,
-            )
+        robot.sendTextMsg(
+            random.choice(texts),
+            r,
+            cxf,
+        )
         # robot.sendTextMsg(report, r, "notify@all")   # 发送消息并@所有人
 
 
@@ -104,8 +106,9 @@ def main(chat_type: int):
     # # 每天 16:30 提醒发日报周报月报
     # robot.onEveryTime("14:21", ReportReminder.remind, robot=robot)
     robot.onEveryTime("08:30", game_remind, robot=robot)
-    robot.onEveryTime("09:35", signin_remind, robot=robot)
-    robot.onEveryTime("12:30", game_remind, robot=robot)
+    robot.onEveryTime("09:00", lambda: signin_remind(robot=robot, is_up=True))
+    robot.onEveryTime("12:00", game_remind, robot=robot)
+    robot.onEveryTime("17:00", lambda: signin_remind(robot=robot, is_up=False))
     robot.onEveryTime("18:00", game_remind, robot=robot)
 
     # 让机器人一直跑
