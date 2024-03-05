@@ -12,19 +12,7 @@ from robot import Robot, __version__
 from wcferry import Wcf
 
 
-# def weather_report(robot: Robot) -> None:
-#     """模拟发送天气预报"""
-
-#     # 获取接收人
-#     receivers = ["24309710403@chatroom"]
-
-#     # 获取天气，需要自己实现，可以参考 https://gitee.com/lch0821/WeatherScrapy 获取天气。
-#     report = "这就是获取到的天气情况了"
-
-#     for r in receivers:
-#         robot.sendTextMsg(report, r, "wxid_d2v9quh2emsu22")
-#         # robot.sendTextMsg(report, r, "notify@all")   # 发送消息并@所有人
-
+djyp_room = "24309710403@chatroom"
 qmh = "wxid_d2v9quh2emsu22"
 zxk = "wxid_krjnrubsezs412"
 cxf = "wxid_af2xqrab4s6z22"
@@ -35,12 +23,12 @@ def signin_remind(robot: Robot, is_up: bool) -> None:
     down = "下班打卡喔! 下班打卡喔! 下班打卡喔! 别忘记打卡喔箱底们呐!!! [呲牙][强] [呲牙][强] [呲牙][强]"
 
     for _ in range(3):
-        robot.sendTextMsg(up if is_up else down, "24309710403@chatroom", "notify@all")
+        robot.sendTextMsg(up if is_up else down, djyp_room, "notify@all")
 
 
 def game_remind(robot: Robot) -> None:
     # 获取接收人
-    receiver = "24309710403@chatroom"
+    receiver = djyp_room
 
     texts = [
         "今天打不打? 我最喜欢玩游戏了,一天不玩就会死掉 [快哭了][可怜]",
@@ -81,7 +69,7 @@ def main(chat_type: int):
     # 机器人启动发送测试消息
     # robot.sendTextMsg(
     #     "大家好我叫丁真,最喜欢抽电子烟,我来自理塘",
-    #     "24309710403@chatroom"
+    #     djyp_room
     # )
 
     # 接收消息

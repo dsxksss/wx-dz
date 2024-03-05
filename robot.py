@@ -4,10 +4,15 @@ import logging
 import os
 import random
 import re
+from typing import List
+import pandas as pd
 import time
+from fuzzywuzzy import process
 import xml.etree.ElementTree as ET
 from queue import Empty
 from threading import Thread
+
+import requests
 from base.func_zhipu import ZhiPu
 
 from wcferry import Wcf, WxMsg
@@ -183,6 +188,8 @@ class Robot(Job):
                         self.sendDzImg(msg.roomid, tag="骂")
                     elif "哭" in msg.content:
                         self.sendDzImg(msg.roomid, tag="哭")
+                    elif "天气" in msg.content:
+                        self.weather_report(msg.content, [msg.roomid])
                     else:
                         self.sendDzImg(msg.roomid)
                 elif msg.content == "^重设人设":
@@ -237,6 +244,107 @@ class Robot(Job):
             self.LOG.error(e)
 
         return 0
+
+    def get_city_code_by_name(self, msg_content: str) -> str:
+        # 读取 Excel 文件
+        df = pd.read_excel("AMap_adcode_citycode.xlsx")
+
+        # 将城市名称作为索引
+        df.set_index("中文名", inplace=True)
+
+        # 从消息内容中提取城市名称
+        city_name, _ = process.extractOne(msg_content, df.index)
+
+        # 模糊匹配城市名称
+        matches = process.extract(city_name, df.index, limit=1)
+
+        # 如果匹配度超过阈值，则输出城市代码和区域代码
+        threshold = 80  # 设置匹配阈值
+        if matches[0][1] >= threshold:
+            matched_city_name = matches[0][0]
+
+            # 强制转换为整数，然后再转换为字符串
+            ad_code = str(int(df.loc[matched_city_name, "adcode"]))
+            print(f"找到最匹配的区域代码：{matched_city_name}, 区域代码为：{ad_code}")
+            return ad_code
+        else:
+            return "null"
+
+    def weather_report(self, city_name, receivers: List[str]) -> None:
+        """模拟发送天气预报"""
+
+        # 获取区域代码
+        ad_code = self.get_city_code_by_name(city_name)
+
+        if ad_code == "null":
+            error_message = "无法获取城市代码"
+            for receiver in receivers:
+                self.sendTextMsg(error_message, receiver)
+
+            return
+
+        # 获取天气 参考高德天气API获取天气。
+        url = f"https://restapi.amap.com/v3/weather/weatherInfo?city={ad_code}&key={self.config.GDTQ_api_key}&extensions=all&output=JSON"
+
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+
+            status = data.get("status")
+            if status == "1":
+                forecasts = data.get("forecasts", [])
+                if forecasts:
+                    for forecast in forecasts:
+                        city = forecast.get("city")
+                        province = forecast.get("province")
+                        report_time = forecast.get("reporttime")
+                        message = f"{province} - {city} 的天气信息：\n"
+                        message += f"数据发布时间：{report_time}\n"
+
+                        casts = forecast.get("casts", [])
+                        if casts:
+                            for cast in casts:
+                                date = cast.get("date")
+                                week = cast.get("week")
+                                day_weather = cast.get("dayweather")
+                                night_weather = cast.get("nightweather")
+                                day_temp = cast.get("daytemp")
+                                night_temp = cast.get("nighttemp")
+                                day_wind = cast.get("daywind")
+                                night_wind = cast.get("nightwind")
+                                day_power = cast.get("daypower")
+                                night_power = cast.get("nightpower")
+
+                                message += f"\n日期：{date} 星期{week}\n"
+                                message += f"白天天气：{day_weather}\n"
+                                message += f"夜晚天气：{night_weather}\n"
+                                message += f"白天温度：{day_temp} °C\n"
+                                message += f"夜晚温度：{night_temp} °C\n"
+                                message += f"白天风向：{day_wind}\n"
+                                message += f"夜晚风向：{night_wind}\n"
+                                message += f"白天风力：{day_power}\n"
+                                message += f"夜晚风力：{night_power}"
+
+                        for receiver in receivers:
+                            self.sendTextMsg(message, receiver)
+
+                        return
+                else:
+                    error_message = "没有实况天气信息。"
+                    self.LOG.error(error_message)
+
+            else:
+                info = data.get("info", "未知错误")
+                infocode = data.get("infocode", "未知")
+                error_message = f"获取天气失败,错误：{info} (Infocode: {infocode})"
+                for receiver in receivers:
+                    self.sendTextMsg(error_message, receiver)
+                return
+        else:
+            error_message = "无法获取天气信息。"
+            for receiver in receivers:
+                self.sendTextMsg(error_message, receiver)
 
     def enableRecvMsg(self) -> None:
         self.wcf.enable_recv_msg(self.onMsg)
