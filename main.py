@@ -26,7 +26,15 @@ from wcferry import Wcf
 #         # robot.sendTextMsg(report, r, "notify@all")   # 发送消息并@所有人
 
 
-def Game_remind(robot: Robot) -> None:
+def signin_remind(robot: Robot) -> None:
+    for _ in range(3):
+        robot.sendTextMsg(
+            "打卡喔! 打卡喔! 打卡喔! 别忘记了打卡喔箱底们呐 [快哭了][快哭了][快哭了]",
+            "24309710403@chatroom",
+        )
+
+
+def game_remind(robot: Robot) -> None:
     # 获取接收人
     receivers = ["24309710403@chatroom"]
 
@@ -83,9 +91,10 @@ def main(chat_type: int):
     # robot.onEveryTime("18:42", robot.newsReport)
     # # 每天 16:30 提醒发日报周报月报
     # robot.onEveryTime("14:21", ReportReminder.remind, robot=robot)
-    robot.onEveryTime("08:30", Game_remind, robot=robot)
-    robot.onEveryTime("12:30", Game_remind, robot=robot)
-    robot.onEveryTime("18:00", Game_remind, robot=robot)
+    robot.onEveryTime("08:30", game_remind, robot=robot)
+    robot.onEveryTime("09:35", signin_remind, robot=robot)
+    robot.onEveryTime("12:30", game_remind, robot=robot)
+    robot.onEveryTime("18:00", game_remind, robot=robot)
 
     # 让机器人一直跑
     robot.keepRunningAndBlockProcess()
