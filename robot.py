@@ -300,7 +300,7 @@ class Robot(Job):
                         city = forecast.get("city")
                         province = forecast.get("province")
                         report_time = forecast.get("reporttime")
-                        message = f"嘿嘿嘿, 小马丁正来啦!\n"
+                        message = f"嘿嘿嘿, 理塘王-丁真珍珠给你播报天气来啦!!!\n"
                         message += f"{province} - {city} 的天气信息：\n"
                         message += f"数据发布时间：{report_time}\n"
 
@@ -328,6 +328,7 @@ class Robot(Job):
                                 message += f"白天风力：{day_power}\n"
                                 message += f"夜晚风力：{night_power}\n"
 
+                        message += f"看完天气播报记得抽根瑞克冷静一下喔! [呲牙][强]"
                         for receiver in receivers:
                             self.sendTextMsg(message, receiver)
 
