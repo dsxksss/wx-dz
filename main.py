@@ -80,13 +80,15 @@ def main(chat_type: int):
 
     # # 每天 18:30 发送新闻
     # robot.onEveryTime("18:42", robot.newsReport)
-    # # 每天 16:30 提醒发日报周报月报
-    # robot.onEveryTime("14:21", ReportReminder.remind, robot=robot)
+
     robot.onEveryTime("08:30", game_remind, robot=robot)
-    robot.onEveryTime("09:00", lambda: signin_remind(robot=robot, is_up=True))
-    robot.onEveryTime("12:00", game_remind, robot=robot)
-    robot.onEveryTime("17:00", lambda: signin_remind(robot=robot, is_up=False))
     robot.onEveryTime("18:00", game_remind, robot=robot)
+    
+    robot.onEveryTime("09:00", lambda: signin_remind(robot=robot, is_up=True))
+    robot.onEveryTime("17:00", lambda: signin_remind(robot=robot, is_up=False))
+    
+    # # 每天 18:30 提醒发日报周报月报
+    robot.onEveryTime("18:30", ReportReminder.remind, robot=robot)
 
     # 让机器人一直跑
     robot.keepRunningAndBlockProcess()
