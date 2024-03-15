@@ -16,14 +16,17 @@ djyp_room = "24309710403@chatroom"
 qmh = "wxid_d2v9quh2emsu22"
 zxk = "wxid_krjnrubsezs412"
 cxf = "wxid_af2xqrab4s6z22"
+hds1 = "wxid_ylp0qx47nbat22"
+hds2 = "wxid_r94mrmhey9pn22"
 
 
-def signin_remind(robot: Robot, is_up: bool) -> None:
-    up = "上班打卡喔! 上班打卡喔! 上班打卡喔! 别忘记打卡喔箱底们呐!!! [快哭了][凋谢] [快哭了][凋谢] [快哭了][凋谢]"
-    down = "下班打卡喔! 下班打卡喔! 下班打卡喔! 别忘记打卡喔箱底们呐!!! [呲牙][强] [呲牙][强] [呲牙][强]"
+# def signin_remind(robot: Robot, is_up: bool, at="") -> None:
+#     up = "上班打卡喔! 上班打卡喔! 上班打卡喔! 别忘记打卡喔箱底们呐!!! [快哭了][凋谢] [快哭了][凋谢] [快哭了][凋谢]"
+#     down = "下班打卡喔! 下班打卡喔! 下班打卡喔! 别忘记打卡喔箱底们呐!!! [呲牙][强] [呲牙][强] [呲牙][强]"
 
-    for _ in range(3):
-        robot.sendTextMsg(up if is_up else down, djyp_room, "notify@all")
+#     robot.sendTextMsg(
+#         up if is_up else down, djyp_room, at if not at == "" else "notify@all"
+#     )
 
 
 def game_remind(robot: Robot) -> None:
@@ -76,17 +79,17 @@ def main(chat_type: int):
     # robot.enableRecvMsg()     # 可能会丢消息？
     robot.enableReceivingMsg()  # 加队列
 
-    # robot.newsReport()
-
     # # 每天 18:30 发送新闻
     # robot.onEveryTime("18:42", robot.newsReport)
 
-    robot.onEveryTime("08:30", game_remind, robot=robot)
-    robot.onEveryTime("18:00", game_remind, robot=robot)
-    
-    robot.onEveryTime("09:00", lambda: signin_remind(robot=robot, is_up=True))
-    robot.onEveryTime("17:00", lambda: signin_remind(robot=robot, is_up=False))
-    
+    # robot.onEveryTime("08:30", game_remind, robot=robot)
+    # robot.onEveryTime("18:00", game_remind, robot=robot)
+
+    robot.onEveryTime("09:00", lambda: ReportReminder.signin_remind(robot=robot, is_up=True))
+    robot.onEveryTime("17:00", lambda: ReportReminder.signin_remind(robot=robot, is_up=False))
+    robot.onEveryTime("21:00", lambda: ReportReminder.signin_remind(robot=robot, is_up=False, at=hds1))
+    robot.onEveryTime("21:00", lambda: ReportReminder.signin_remind(robot=robot, is_up=False, at=hds2))
+
     # # 每天 18:30 提醒发日报周报月报
     robot.onEveryTime("18:30", ReportReminder.remind, robot=robot)
 

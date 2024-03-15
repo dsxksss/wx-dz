@@ -188,6 +188,8 @@ class Robot(Job):
                         self.sendDzImg(msg.roomid, tag="骂")
                     elif "哭" in msg.content:
                         self.sendDzImg(msg.roomid, tag="哭")
+                    elif "读书" in msg.content:
+                        self.sendDzImg(msg.roomid, tag="读书")
                     elif "天气" in msg.content:
                         self.weather_report(msg.content, [msg.roomid])
                         self.sendDzImg(msg.roomid, tag="笑")
@@ -376,15 +378,19 @@ class Robot(Job):
         :param at_list: 要@的wxid, @所有人的wxid为：notify@all
         """
         img_dir_path = os.path.join(os.getcwd(), "images")
+        img_dir_paths = os.listdir(img_dir_path)
+        xiao_img_dir_paths = [url for url in img_dir_paths if "笑" in url]
+        ma_img_dir_paths = [url for url in img_dir_paths if "骂" in url]
+        dushu_img_dir_paths = [url for url in img_dir_paths if "读书" in url]
 
         if tag == "笑":
-            img_path = os.path.join(img_dir_path, "笑1.jpg")
+            img_path = os.path.join(img_dir_path, random.choice(xiao_img_dir_paths))
         elif tag == "骂":
-            img_path = os.path.join(
-                img_dir_path, random.choice(["骂1.jpeg", "骂2.jpg"])
-            )
+            img_path = os.path.join(img_dir_path, random.choice(ma_img_dir_paths))
         elif tag == "哭":
             img_path = os.path.join(img_dir_path, "哭.jpg")
+        elif tag == "读书":
+            img_path = os.path.join(img_dir_path, random.choice(dushu_img_dir_paths))
         else:
             img_path = os.path.join(
                 img_dir_path, random.choice(os.listdir(img_dir_path))

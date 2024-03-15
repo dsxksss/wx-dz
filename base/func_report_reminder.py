@@ -8,12 +8,12 @@ from robot import Robot
 class ReportReminder:
 
     @staticmethod
-    def remind(robot: Robot) -> None:
+    def remind(robot: Robot, at="") -> None:
 
         receivers = robot.config.REPORT_REMINDERS
         if not receivers:
             receivers = ["filehelper"]
-            
+
         # 日报周报月报提醒
         for receiver in receivers:
             today = datetime.datetime.now().date()
@@ -22,26 +22,55 @@ class ReportReminder:
                 robot.sendTextMsg(
                     "休息日快乐, 记得把没补的周报日报写一下喔 箱底们呐",
                     receiver,
-                    "notify@all",
+                    at if not at == "" else "notify@all",
                 )
             # 如果是工作日
             if is_workday(today):
                 msg = "写工作日报了! 写工作日报了! 写工作日报了! 别忘记写日报了箱底们呐!!!(补交日期只有30天内, 早写早完事!) [快哭了][凋谢] [快哭了][凋谢] [快哭了][凋谢]"
-                for _ in range(3):
-                    robot.sendTextMsg(msg, receiver, "notify@all")
+
+                robot.sendTextMsg(
+                    msg,
+                    receiver,
+                    at if not at == "" else "notify@all",
+                )
 
             # 如果是本周最后一个工作日
             if ReportReminder.last_work_day_of_week(today) == today:
                 msg = "写工作周报了! 写工作周报了! 写工作周报了! 别忘记写周报了箱底们呐!!!(补交日期只有30天内, 早写早完事!) [快哭了][凋谢] [快哭了][凋谢] [快哭了][凋谢]"
-                for _ in range(3):
-                    robot.sendTextMsg(msg, receiver, "notify@all")
+
+                robot.sendTextMsg(
+                    msg,
+                    receiver,
+                    at if not at == "" else "notify@all",
+                )
 
             # 如果本日是本月最后一整周的最后一个工作日:
             if ReportReminder.last_work_friday_of_month(today) == today:
                 robot.sendTextMsg(
                     "一个月又过去了喔, 打工快乐!(别忘记补周报日报喔 箱底们呐) [呲牙][强]",
                     receiver,
-                    "notify@all",
+                    at if not at == "" else "notify@all",
+                )
+
+    @staticmethod
+    def signin_remind(robot: Robot, is_up: bool, at="") -> None:
+
+        receivers = robot.config.SIGNIN_REMINDERS
+        if not receivers:
+            receivers = ["filehelper"]
+
+        # 日报周报月报提醒
+        for receiver in receivers:
+            today = datetime.datetime.now().date()
+            # 如果是工作日
+            if is_workday(today):
+                up = "上班打卡喔! 上班打卡喔! 上班打卡喔! 别忘记打卡喔箱底们呐!!! [快哭了][凋谢] [快哭了][凋谢] [快哭了][凋谢]"
+                down = "下班打卡喔! 下班打卡喔! 下班打卡喔! 别忘记打卡喔箱底们呐!!! [呲牙][强] [呲牙][强] [呲牙][强]"
+
+                robot.sendTextMsg(
+                    up if is_up else down,
+                    receiver,
+                    at if not at == "" else "notify@all",
                 )
 
     # 计算本月最后一个周的最后一个工作日
