@@ -181,7 +181,8 @@ class Robot(Job):
                     or "珍珠" in msg.content
                     or "小马" in msg.content
                     or "雪豹" in msg.content
-                ):
+                    or "顶针" in msg.content
+                ) and "<refermsg>" not in msg.content:
                     if "笑" in msg.content:
                         self.sendDzImg(msg.roomid, tag="笑")
                     elif "骂" in msg.content:
