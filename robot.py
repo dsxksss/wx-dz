@@ -183,7 +183,13 @@ class Robot(Job):
                     or "雪豹" in msg.content
                     or "顶针" in msg.content
                 ) and "<refermsg>" not in msg.content:
-                    if "笑" in msg.content:
+                    if "讲个笑话" in msg.content:
+                        self.sendTextMsg(
+                            "奶茶店员：请问什么甜度呢？\n崔晓枫：半糖\n奶茶店员：什么？\n崔晓枫：梦中的梦中~\n奶茶店员：哦哦，半糖啊",
+                            msg.roomid,
+                        )
+                        self.sendDzImg(msg.roomid, tag="笑")
+                    elif "笑" in msg.content:
                         self.sendDzImg(msg.roomid, tag="笑")
                     elif "骂" in msg.content:
                         self.sendDzImg(msg.roomid, tag="骂")
