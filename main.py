@@ -26,7 +26,7 @@ rzq = "wxid_jkbj2u83b6kq22"
 hds1 = "wxid_ylp0qx47nbat22"
 hds2 = "wxid_r94mrmhey9pn22"
 
-sy = [qmh,cxf,xgw,hds1,hds2]
+sy = [qmh, cxf, zxk, xgw, rzq, wly, hds1, hds2]
 
 
 # def signin_remind(robot: Robot, is_up: bool, at="") -> None:
@@ -62,6 +62,19 @@ def game_remind(robot: Robot) -> None:
     # cxf
     robot.sendTextMsg(random.choice(texts), receiver, cxf)
 
+def remake_remind(robot: Robot) -> None:
+    # 获取接收人
+    receiver = test_room
+
+    texts = [
+        "被指到的人，今天可以考虑重开喔 [笑脸][强]",
+        "原来你还活着呀? [笑脸]",
+        "记得要玩原神喔，今天又是原气满满的一天呢! [笑脸][强]",
+    ]
+
+    # 随机发送
+    robot.sendTextMsg(random.choice(texts), receiver, random.choice(sy))
+
     # robot.sendTextMsg(report, r, "notify@all")   # 发送消息并@所有人
 
 
@@ -82,18 +95,27 @@ def main(chat_type: int):
     # robot.enableRecvMsg()     # 可能会丢消息？
     robot.enableReceivingMsg()  # 加队列
 
-    # # 每天 08:30 发送新闻
+    # 每天 08:30 发送新闻
     robot.onEveryTime("08:30", robot.newsReport)
 
     # robot.onEveryTime("08:30", game_remind, robot=robot)
     # robot.onEveryTime("18:00", game_remind, robot=robot)
 
-    robot.onEveryTime("09:00", lambda: ReportReminder.signin_remind(robot=robot, is_up=True))
-    robot.onEveryTime("17:00", lambda: ReportReminder.signin_remind(robot=robot, is_up=False))
+    # 打卡提示
+    robot.onEveryTime(
+        "09:00", lambda: ReportReminder.signin_remind(robot=robot, is_up=True)
+    )
+    robot.onEveryTime(
+        "17:00", lambda: ReportReminder.signin_remind(robot=robot, is_up=False)
+    )
+    
+    
+    # 搞心态提示
+    robot.onEveryTime("8:00", remake_remind, robot=robot)
+    robot.onEveryTime("21:00", remake_remind, robot=robot)
 
     # # 每天 18:30 提醒发日报周报月报
     robot.onEveryTime("18:30", ReportReminder.remind, robot=robot)
-    robot.sendTextMsg(robot.getAllContacts(),test_room)
 
     # 让机器人一直跑
     robot.keepRunningAndBlockProcess()
