@@ -5,6 +5,7 @@ import random
 import signal
 from argparse import ArgumentParser
 
+from base.func_chengyu import Chengyu
 from base.func_report_reminder import ReportReminder
 from configuration import Config
 from constants import ChatType
@@ -13,6 +14,9 @@ from wcferry import Wcf
 
 
 djyp_room = "24309710403@chatroom"
+test_room = "44946008946@chatroom"
+wpp_room = "34804723034@chatroom"
+
 qmh = "wxid_d2v9quh2emsu22"
 zxk = "wxid_krjnrubsezs412"
 cxf = "wxid_af2xqrab4s6z22"
@@ -69,26 +73,18 @@ def main(chat_type: int):
     robot = Robot(config, wcf, chat_type)
     robot.LOG.info(f"WeChatRobot【{__version__}】成功启动···")
 
-    # 机器人启动发送测试消息
-    # robot.sendTextMsg(
-    #     "大家好我叫丁真,最喜欢抽电子烟,我来自理塘",
-    #     djyp_room
-    # )
-
     # 接收消息
     # robot.enableRecvMsg()     # 可能会丢消息？
     robot.enableReceivingMsg()  # 加队列
 
-    # # 每天 18:30 发送新闻
-    # robot.onEveryTime("18:42", robot.newsReport)
+    # # 每天 08:30 发送新闻
+    robot.onEveryTime("08:30", robot.newsReport)
 
     # robot.onEveryTime("08:30", game_remind, robot=robot)
     # robot.onEveryTime("18:00", game_remind, robot=robot)
 
     robot.onEveryTime("09:00", lambda: ReportReminder.signin_remind(robot=robot, is_up=True))
     robot.onEveryTime("17:00", lambda: ReportReminder.signin_remind(robot=robot, is_up=False))
-    robot.onEveryTime("21:00", lambda: ReportReminder.signin_remind(robot=robot, is_up=False, at=hds1))
-    robot.onEveryTime("21:00", lambda: ReportReminder.signin_remind(robot=robot, is_up=False, at=hds2))
 
     # # 每天 18:30 提醒发日报周报月报
     robot.onEveryTime("18:30", ReportReminder.remind, robot=robot)

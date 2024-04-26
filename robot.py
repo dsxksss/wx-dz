@@ -154,6 +154,41 @@ class Robot(Job):
             self.LOG.error(f"无法从 ChatGPT 获得答案{rsp}")
             return False
 
+    def dz_processMsg(self, msg: WxMsg) -> None:
+        if (
+            "丁真" in msg.content
+            or "顶真" in msg.content
+            or "dz" in msg.content
+            or "珍珠" in msg.content
+            or "小马" in msg.content
+            or "雪豹" in msg.content
+            or "顶针" in msg.content
+        ) and "<refermsg>" not in msg.content:
+            if "讲个笑话" in msg.content:
+                ac = msg.content.split("主角(")[1].split(")")[0]
+                custom_msg = f"奶茶店员：请问什么甜度呢？\n{ac}：半糖\n奶茶店员：什么？\n{ac}：梦中的梦中~\n奶茶店员：哦哦，半糖啊 [憨笑][OK]"
+                self.sendTextMsg(custom_msg, msg.roomid)
+                self.sendDzImg(msg.roomid, tag="笑")
+            elif "笑" in msg.content:
+                self.sendDzImg(msg.roomid, tag="笑")
+            elif "骂" in msg.content:
+                self.sendDzImg(msg.roomid, tag="骂")
+            elif "哭" in msg.content:
+                self.sendDzImg(msg.roomid, tag="哭")
+            elif "读书" in msg.content:
+                self.sendDzImg(msg.roomid, tag="读书")
+            elif "天气" in msg.content:
+                self.weather_report(msg.content, [msg.roomid])
+                self.sendDzImg(msg.roomid, tag="笑")
+            else:
+                self.sendDzImg(msg.roomid)
+        elif msg.content == "^重设人设":
+            self.resetDz(msg)
+            self.sendTextMsg("人设重设成功", msg.roomid)
+            self.LOG.info("已重设人设")
+        else:
+            self.toChengyu(msg)
+
     def processMsg(self, msg: WxMsg) -> None:
         """当接收到消息的时候，会调用本方法。如果不实现本方法，则打印原始消息。
         此处可进行自定义发送的内容,如通过 msg.content 关键字自动获取当前天气信息，并发送到对应的群组@发送者
@@ -173,40 +208,7 @@ class Robot(Job):
                 self.toAt(msg)
 
             else:  # 其他消息
-
-                if (
-                    "丁真" in msg.content
-                    or "顶真" in msg.content
-                    or "dz" in msg.content
-                    or "珍珠" in msg.content
-                    or "小马" in msg.content
-                    or "雪豹" in msg.content
-                    or "顶针" in msg.content
-                ) and "<refermsg>" not in msg.content:
-                    if "讲个笑话" in msg.content:
-                        self.sendTextMsg(
-                            "奶茶店员：请问什么甜度呢？\n崔晓枫：半糖\n奶茶店员：什么？\n崔晓枫：梦中的梦中~\n奶茶店员：哦哦，半糖啊",
-                            msg.roomid,
-                        )
-                        self.sendDzImg(msg.roomid, tag="笑")
-                    elif "笑" in msg.content:
-                        self.sendDzImg(msg.roomid, tag="笑")
-                    elif "骂" in msg.content:
-                        self.sendDzImg(msg.roomid, tag="骂")
-                    elif "哭" in msg.content:
-                        self.sendDzImg(msg.roomid, tag="哭")
-                    elif "读书" in msg.content:
-                        self.sendDzImg(msg.roomid, tag="读书")
-                    elif "天气" in msg.content:
-                        self.weather_report(msg.content, [msg.roomid])
-                        self.sendDzImg(msg.roomid, tag="笑")
-                    else:
-                        self.sendDzImg(msg.roomid)
-                elif msg.content == "^重设人设":
-                    self.resetDz(msg)
-                    self.LOG.info("已重设人设")
-                else:
-                    self.toChengyu(msg)
+                self.dz_processMsg(msg)
 
             return  # 处理完群聊信息，后面就不需要处理了
 
@@ -225,7 +227,7 @@ class Robot(Job):
                     self.LOG.info("已更新")
 
             else:
-                self.toChitchat(msg)  # 闲聊
+                self.dz_processMsg(msg)
 
     def resetDz(self, msg: WxMsg):
         rs = """
