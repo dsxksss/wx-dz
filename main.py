@@ -111,7 +111,7 @@ def main(chat_type: int):
     
     
     # 搞心态提示
-    robot.onEveryTime("8:00", remake_remind, robot=robot)
+    robot.onEveryTime("08:00", remake_remind, robot=robot)
     robot.onEveryTime("21:00", remake_remind, robot=robot)
 
     # # 每天 18:30 提醒发日报周报月报
