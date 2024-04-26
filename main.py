@@ -20,8 +20,13 @@ wpp_room = "34804723034@chatroom"
 qmh = "wxid_d2v9quh2emsu22"
 zxk = "wxid_krjnrubsezs412"
 cxf = "wxid_af2xqrab4s6z22"
+xgw = "wxid_e2ir27n3tk2v22"
+wly = "wxid_d6j3mqs9pxie22"
+rzq = "wxid_jkbj2u83b6kq22"
 hds1 = "wxid_ylp0qx47nbat22"
 hds2 = "wxid_r94mrmhey9pn22"
+
+sy = [qmh,cxf,xgw,hds1,hds2]
 
 
 # def signin_remind(robot: Robot, is_up: bool, at="") -> None:
@@ -88,6 +93,7 @@ def main(chat_type: int):
 
     # # 每天 18:30 提醒发日报周报月报
     robot.onEveryTime("18:30", ReportReminder.remind, robot=robot)
+    robot.sendTextMsg(robot.getAllContacts(),test_room)
 
     # 让机器人一直跑
     robot.keepRunningAndBlockProcess()
@@ -96,7 +102,7 @@ def main(chat_type: int):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument(
-        "-c", type=int, default=0, help=f"选择模型参数序号: {ChatType.help_hint()}"
+        "-c", type=int, default=2, help=f"选择模型参数序号: {ChatType.help_hint()}"
     )
     args = parser.parse_args().c
     main(args)
