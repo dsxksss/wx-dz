@@ -64,7 +64,7 @@ def game_remind(robot: Robot) -> None:
 
 def remake_remind(robot: Robot) -> None:
     # 获取接收人
-    receiver = test_room
+    receiver = djyp_room
 
     texts = [
         "被指到的人，今天可以考虑重开喔 [笑脸][强]",
